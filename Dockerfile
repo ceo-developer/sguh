@@ -1,17 +1,23 @@
-# Base Image
 FROM python:3.11-slim
 
-# Working Directory
+# Dependencies install करो
+RUN apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
+    curl \
+    unzip \
+    xvfb \
+    && apt-get clean
+
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER=/usr/bin/chromedriver
+
 WORKDIR /app
 
-# Copy files
 COPY . .
 
-# Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port
-EXPOSE 5000
+EXPOSE 8080
 
-# Command to run the app
 CMD ["python", "app.py"]

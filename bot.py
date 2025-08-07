@@ -15,7 +15,7 @@ YOUR_TELEGRAM_ID = int(os.getenv("YOUR_TELEGRAM_ID", "8103868210"))
 IVASMS_EMAIL = os.getenv("IVASMS_EMAIL", "tmoneydavid2@gmail.com")
 IVASMS_PASSWORD = os.getenv("IVASMS_PASSWORD", "Davidmicheal21")
 IVASMS_URL = "https://www.ivasms.com/login"
-WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://your-render-app.onrender.com")  # <-- UPDATE THIS
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://profound-kristi-imdigitalvasu-2-dd14a46c.koyeb.app/")  # <-- UPDATE THIS
 # ==================================
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)

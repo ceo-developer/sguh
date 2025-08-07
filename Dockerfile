@@ -1,28 +1,17 @@
+# Base Image
 FROM python:3.11-slim
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    unzip \
-    curl \
-    chromium \
-    chromium-driver \
-    xvfb \
-    fonts-liberation \
-    libnss3 \
-    libxss1 \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    && apt-get clean
-
-ENV CHROME_BIN=/usr/bin/chromium
-ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
-
+# Working Directory
 WORKDIR /app
+
+# Copy files
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install -r requirements.txt
 
-CMD ["python", "bot.py"]
+# Expose the port
+EXPOSE 5000
+
+# Command to run the app
+CMD ["python", "app.py"]

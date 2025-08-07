@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ivasms-otp-bot
+    env: docker
+    plan: free
+    region: oregon
+    autoDeploy: true

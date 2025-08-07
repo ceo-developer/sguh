@@ -1,7 +1,6 @@
 import os
 import time
 import threading
-import logging
 from flask import Flask, request
 import telebot
 from telebot.types import ReplyKeyboardMarkup
@@ -10,12 +9,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 # ============ CONFIG =============
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "8261249645:AAHKZU8xNzP3V5FmAQOO9CBkDIukjVnstgw")
-YOUR_TELEGRAM_ID = int(os.getenv("YOUR_TELEGRAM_ID", "8103868210"))
-IVASMS_EMAIL = os.getenv("IVASMS_EMAIL", "tmoneydavid2@gmail.com")
-IVASMS_PASSWORD = os.getenv("IVASMS_PASSWORD", "Davidmicheal21")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+YOUR_TELEGRAM_ID = int(os.getenv("YOUR_TELEGRAM_ID"))
+IVASMS_EMAIL = os.getenv("IVASMS_EMAIL")
+IVASMS_PASSWORD = os.getenv("IVASMS_PASSWORD")
 IVASMS_URL = "https://www.ivasms.com/login"
-WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://profound-kristi-imdigitalvasu-2-dd14a46c.koyeb.app/")  # <-- UPDATE THIS
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g. https://your-koyeb-subdomain.koyeb.app
 # ==================================
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -26,7 +25,6 @@ monitoring = False
 acquired_numbers = []
 
 
-# === Start browser ===
 def start_browser():
     global driver
     chrome_options = Options()
@@ -37,7 +35,6 @@ def start_browser():
     driver = webdriver.Chrome(options=chrome_options)
 
 
-# === Login function ===
 def login_ivasms():
     driver.get(IVASMS_URL)
     time.sleep(3)
@@ -47,7 +44,6 @@ def login_ivasms():
     time.sleep(5)
 
 
-# === Get numbers ===
 def get_available_numbers():
     driver.get("https://www.ivasms.com/test-number")
     time.sleep(3)
@@ -62,7 +58,6 @@ def get_available_numbers():
     return numbers
 
 
-# === Acquire all ===
 def acquire_all_numbers():
     driver.get("https://www.ivasms.com/test-number")
     time.sleep(3)
@@ -75,8 +70,8 @@ def acquire_all_numbers():
             continue
 
 
-# === OTP monitoring ===
 def check_for_otps():
+    global monitoring
     while monitoring:
         try:
             driver.get("https://www.ivasms.com/client-active-sms")
@@ -93,7 +88,7 @@ def check_for_otps():
         time.sleep(60)
 
 
-# === Telegram handlers ===
+# === Telegram Handlers ===
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     global monitoring, acquired_numbers
@@ -137,7 +132,7 @@ def handle_help(message):
     bot.reply_to(message, "/start - Start the bot\n/help - Show help info")
 
 
-# === Flask webhook endpoint ===
+# === Flask Routes ===
 @app.route(f"/{TELEGRAM_TOKEN}", methods=['POST'])
 def webhook():
     json_string = request.get_data().decode('utf-8')
@@ -146,20 +141,14 @@ def webhook():
     return 'OK', 200
 
 
-# === Flask health check ===
 @app.route("/", methods=['GET'])
 def index():
     return "🤖 Teez Plug Bot is Running", 200
 
 
-# === Webhook + Run Flask app ===
+# === Start Flask App + Set Webhook ===
 if __name__ == "__main__":
-    start_browser()
-    login_ivasms()
-
     bot.remove_webhook()
     bot.set_webhook(url=f"{WEBHOOK_URL}/{TELEGRAM_TOKEN}")
-    print("🌐 Webhook set. Starting Flask app...")
-
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
